@@ -1,7 +1,7 @@
 Attacher
 ========
 
-Provides socket access to lxc-attach command
+Provides unix socket access to lxc-attach command
 
 ## Testing
 
@@ -11,15 +11,18 @@ Provides socket access to lxc-attach command
 ## Protocol
 
 ```
---> {"attach": "597713fb3a55156a3e32e16be90559b779deb2cc520bf35079f406e6e63bfcb9", "user": "action"}\n
-<-- {"attach": "success"}\n
-<-- ["d", "action@foobar4:/$ "]\n
---> ["d", "echo hello world\n"]\n
+u s
+<-- {"connected": true}
+--> {"attach": "597713fb3a55156a3e32e16be90559b779deb2cc520bf35079f406e6e63bfcb9", "user": "action"}
+<-- {"attached": true}
+<-- ["d", "action@foobar4:/$ "]
+--> ["d", "echo hello world\n"]
 <-- ["d", "echo hello world\r\nhello world\r\naction@foobar4:~$ "]
---> ["disconnect", ""]\n
+--> ["disconnect", ""]
 ```
 
 ```
+<-- {"connected", true}
 --> {"some_unknown_command": "foobar"}
 <-- {"error": "wtf"}
 ```

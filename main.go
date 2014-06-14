@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	respWtf      = []byte("{\"error\":\"wtf\"}\n")
-	respAttached = []byte("{\"attach\":\"success\"}\n")
+	respWtf       = []byte("{\"error\":\"wtf\"}\n")
+	respConnected = []byte("{\"connected\":true}\n")
+	respAttached  = []byte("{\"attached\":true}\n")
 )
 
 type Handshake struct {
@@ -33,11 +34,16 @@ type Attacher struct {
 func (a *Attacher) handle(conn net.Conn) {
 	defer conn.Close()
 
+	_, err := conn.Write(respConnected)
+	if err != nil {
+		return
+	}
+
 	var h Handshake
 	in := json.NewDecoder(conn)
 	out := json.NewEncoder(conn)
 
-	err := in.Decode(&h)
+	err = in.Decode(&h)
 	if err != nil {
 		conn.Write(respWtf)
 		return
