@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"net"
 	"os"
 	"os/exec"
 	"os/signal"
 
 	"github.com/kr/pty"
+	"github.com/nitrous-io/attacher/pkg/term"
 	"github.com/nitrous-io/nitrous-common/logger"
 )
 
@@ -90,6 +92,34 @@ func (a *Attacher) handle(conn net.Conn) {
 
 			if cmd[0] == "d" && cmd[1] != "" {
 				_, err := pty.Write([]byte(cmd[1]))
+				if err != nil {
+					a.logger.Error(err)
+					out.Encode(&ErrorResp{Error: err.Error()})
+					c <- true
+					return
+				}
+				continue
+			}
+
+			if cmd[0] == "w" && cmd[1] != "" {
+				var width, height uint16
+				n, err := fmt.Sscanf(cmd[1], "%d %d", &width, &height)
+				if err != nil {
+					out.Encode(&ErrorResp{Error: err.Error()})
+					c <- true
+					return
+				}
+				if n != 2 {
+					continue
+				}
+				if width == 0 {
+					width = 1
+				}
+				if height == 0 {
+					height = 1
+				}
+
+				err = term.SetWinsize(pty.Fd(), &term.Winsize{Height: height, Width: width})
 				if err != nil {
 					out.Encode(&ErrorResp{Error: err.Error()})
 					c <- true

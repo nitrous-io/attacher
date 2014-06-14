@@ -18,6 +18,7 @@ u s
 <-- ["d", "action@foobar4:/$ "]
 --> ["d", "echo hello world\n"]
 <-- ["d", "echo hello world\r\nhello world\r\naction@foobar4:~$ "]
+--> ["w", "80 25"]
 --> ["disconnect", ""]
 ```
 
